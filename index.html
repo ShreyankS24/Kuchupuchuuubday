@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasandida Aurat Ka Birthday</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-style: normal;
+            background-color: #fce4ec;
+            overflow-x: hidden;
+        }
+        /* Background floating hearts animation */
+        .heart-bg {
+            position: absolute;
+            font-size: 24px;
+            color: rgba(244, 143, 177, 0.4);
+            opacity: 0;
+            animation: floatUp 6s linear infinite;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { motion, AnimatePresence } = window.Motion;
+
+        // Custom Floating Hearts Background Component
+        const FloatingHearts = () => {
+            const [hearts, setHearts] = useState([]);
+            useEffect(() => {
+                const generatedHearts = Array.from({ length: 15 }).map((_, i) => ({
+                    id: i,
+                    left: `${Math.random() * 100}%`,
+                    delay: `${Math.random() * 1.5}s`,
+                    duration: `${3 + Math.random() * 3}s`,
+                }));
+                setHearts(generatedHearts);
+            }, []);
+
+            return (
+                <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                    {hearts.map(heart => (
+                        <div 
+                            key={heart.id} 
+                            className="heart-bg"
+                            style={{
+                                left: heart.left,
+                                animationDelay: heart.delay,
+                                animationDuration: heart.duration
+                            }}
+                        >
+                            ♥
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
+        function App() {
+            // Flow steps: 
+            // 1: "It's Your Special Day Yaaay!"
+            // 2: "I made something for you......"
+            // 3: "Do wanna see what I made??" (Yes/No buttons)
+            // 4: "Have a look at it, Kuchupuchuuu"
+            // 5: Main Interactive Control Panel Dashboard
+            const [step, setStep] = useState(1);
+            
+            // Interactive UI flags
+            const [isLit, setIsLit] = useState(false);
+            const [isPlaying, setIsPlaying] = useState(false);
+            const [isDecorated, setIsDecorated] = useState(false);
+            const [balloonsFlown, setBalloonsFlown] = useState(false);
+            const [showCake, setShowCake] = useState(false);
+            const [showMessage, setShowMessage] = useState(false);
+
+            // Audio configuration (using a royalty-free celebratory track placeholder)
+            const [audio] = useState(new Audio('Component/Noor.mp3'));
+
+            useEffect(() => {
+                if (isPlaying) {
+                    audio.play().catch(e => console.log("Audio play blocked until user gesture interaction."));
+                } else {
+                    audio.pause();
+                }
+            }, [isPlaying]);
+
+            // Setup sequence triggers for introduction steps
+            useEffect(() => {
+                if (step === 1) {
+                    const timer = setTimeout(() => setStep(2), 3500);
+                    return () => clearTimeout(timer);
+                }
+                if (step === 2) {
+                    const timer = setTimeout(() => setStep(3), 3500);
+                    return () => clearTimeout(timer);
+                }
+                if (step === 4) {
+                    const timer = setTimeout(() => setStep(5), 3000);
+                    return () => clearTimeout(timer);
+                }
+            }, [step]);
+
+            return (
+                <div className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-pink-50 overflow-hidden select-none">
+                    <FloatingHearts />
+
+                    <AnimatePresence mode="wait">
+                        {/* STEP 1: Intro Splash Greeting */}
+                        {step === 1 && (
+                            <motion.div 
+                                key="step1"
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                className="z-10 text-center bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl max-w-md border border-pink-100"
+                            >
+                                <span className="text-yellow-400 text-4xl block mb-2">✨</span>
+                                <h1 className="text-3xl font-bold text-gray-800">It's Your Special Day Yaaaay!</h1>
+                            </motion.div>
+                        )}
+
+                        {/* STEP 2: Intro Statement */}
+                        {step === 2 && (
+                            <motion.div 
+                                key="step2"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                className="z-10 text-center bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl max-w-md border border-pink-100"
+                            >
+                                <span className="text-yellow-400 text-4xl block mb-2">✨</span>
+                                <p className="text-xl font-medium text-gray-700"> I made something for you, my special lady ❤️</p>
+                            </motion.div>
+                        )}
+
+                        {/* STEP 3: Question Intermission */}
+                        {step === 3 && (
+                            <motion.div 
+                                key="step3"
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                className="z-10 text-center bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl max-w-md border border-pink-100"
+                            >
+                                <span className="text-yellow-400 text-4xl block mb-2">✨</span>
+                                <h2 className="text-2xl font-bold text-gray-800 mb-6">Do you wanna see what I made??</h2>
+                                <div className="flex justify-center gap-4">
+                                    <button 
+                                        onClick={() => setStep(4)}
+                                        className="px-6 py-2 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full shadow-md transform active:scale-95 transition"
+                                    >
+                                        Yes!
+                                    </button>
+                                    <button 
+                                        onClick={() => alert("Come on, you definitely want to see it! 😉")}
+                                        className="px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold rounded-full shadow-md transform active:scale-95 transition"
+                                    >
+                                        No
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* STEP 4: Reveal Transition */}
+                        {step === 4 && (
+                            <motion.div 
+                                key="step4"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="z-10 text-center bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl max-w-md border border-pink-100"
+                            >
+                                <h2 className="text-2xl font-semibold text-pink-600 animate-pulse">Have a look at it, Kuchupuchuuu</h2>
+                            </motion.div>
+                        )}
+
+                        {/* STEP 5: Interactive Interactive Dashboard Workspace */}
+                        {step === 5 && (
+                            <motion.div 
+                                key="step5"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className={`w-full max-w-2xl min-h-[550px] transition-all duration-1000 p-6 rounded-2xl shadow-2xl flex flex-col items-center justify-start z-10 relative ${
+                                    isLit ? 'bg-white border border-pink-100' : 'bg-zinc-950 text-white shadow-black/80'
+                                }`}
+                            >
+                                {/* Decorative Accent Top Status Dots */}
+                                <div className="absolute top-4 left-4 flex gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-yellow-400 shadow"></div>
+                                    <div className="w-3 h-3 rounded-full bg-red-500 shadow"></div>
+                                </div>
+
+                                {/* Dynamic Modular Step Action Buttons */}
+                                <div className="w-full max-w-md mb-8 mt-4">
+                                    {!isLit && (
+                                        <button 
+                                            onClick={() => setIsLit(true)}
+                                            className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-lg font-medium rounded-xl shadow-lg shadow-blue-600/30 transition transform active:scale-98"
+                                        >
+                                            Lights On
+                                        </button>
+                                    )}
+
+                                    {isLit && !isPlaying && (
+                                        <button 
+                                            onClick={() => setIsPlaying(true)}
+                                            className="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white text-lg font-medium rounded-xl shadow-lg transition transform active:scale-98"
+                                        >
+                                            Play Music
+                                        </button>
+                                    )}
+
+                                    {isLit && isPlaying && !isDecorated && (
+                                        <button 
+                                            onClick={() => setIsDecorated(true)}
+                                            className="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white text-lg font-medium rounded-xl shadow-lg transition transform active:scale-98"
+                                        >
+                                            Decorate
+                                        </button>
+                                    )}
+
+                                    {isDecorated && !balloonsFlown && (
+                                        <button 
+                                            onClick={() => setBalloonsFlown(true)}
+                                            className="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white text-lg font-medium rounded-xl shadow-lg transition transform active:scale-98"
+                                        >
+                                            Fly the Balloons
+                                        </button>
+                                    )}
+
+                                    {balloonsFlown && !showCake && (
+                                        <button 
+                                            onClick={() => setShowCake(true)}
+                                            className="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white text-lg font-medium rounded-xl shadow-lg transition transform active:scale-98"
+                                        >
+                                            Let's Cut the Cake Ansuuuu
+                                        </button>
+                                    )}
+
+                                    {showCake && !showMessage && (
+                                        <button 
+                                            onClick={() => setShowMessage(true)}
+                                            className="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white text-lg font-medium rounded-xl shadow-lg transition transform active:scale-98"
+                                        >
+                                            Well, I Have a Message for You Meri Rasmalai 
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Main Visual Canvas Area */}
+                                <div className="w-full flex-1 flex flex-col items-center justify-center relative min-h-[300px]">
+                                    
+                                    {/* Birthday Bunting Banner Decoration */}
+                                    {isDecorated && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: -50 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="absolute top-0 w-full max-w-md"
+                                        >
+                                            {/* Custom SVG Banner recreation */}
+                                            <svg viewBox="0 0 400 120" className="w-full drop-shadow-md">
+                                                <path d="M 10 20 Q 200 80 390 20" fill="none" stroke="#8bc34a" strokeWidth="3" />
+                                                {/* Ribbons / Flags */}
+                                                {["H","A","P","P","Y","B","I","R","T","H","D","A","Y"].map((char, index) => {
+                                                    const total = 13;
+                                                    const x = 30 + (index * (340 / (total - 1)));
+                                                    // Simple parabola equation for matching string arc curve
+                                                    const y = 20 + 0.0015 * Math.pow(x - 200, 2); 
+                                                    return (
+                                                        <g key={index} transform={`translate(${x - 12}, ${y})`}>
+                                                            <polygon points="0,0 24,0 24,35 12,25 0,35" fill={index % 2 === 0 ? "#aed581" : "#c5e1a5"} />
+                                                            <text x="12" y="18" fill="#33691e" fontSize="12" fontWeight="bold" textAnchor="middle">{char}</text>
+                                                        </g>
+                                                    );
+                                                })}
+                                            </svg>
+                                        </motion.div>
+                                    )}
+
+                                    {/* Interactive Floating Balloons Component Grid */}
+                                    {balloonsFlown && (
+                                        <div className="absolute inset-0 pointer-events-none flex justify-center gap-3 overflow-hidden">
+                                            {Array.from({ length: 8 }).map((_, i) => {
+                                                const colors = ['bg-teal-400', 'bg-rose-400', 'bg-yellow-400', 'bg-emerald-400', 'bg-indigo-400'];
+                                                return (
+                                                    <motion.div
+                                                        key={i}
+                                                        initial={{ y: 400, opacity: 1 }}
+                                                        animate={{ y: -600 }}
+                                                        transition={{ 
+                                                            duration: 4 + Math.random() * 1.7,
+                                                            repeat: Infinity,
+                                                            delay: i * 0.4 
+                                                        }}
+                                                        className={`w-10 h-14 rounded-full ${colors[i % colors.length]} relative shadow-md`}
+                                                        style={{ alignSelf: 'flex-end' }}
+                                                    >
+                                                        {/* Balloon Node Tail Accent */}
+                                                        <div className="w-2 h-2 bg-inherit absolute bottom-[-2px] left-1/2 transform -translate-x-1/2 rotate-45"></div>
+                                                        {/* Balloon Thread string line */}
+                                                        <div className="w-[1px] h-12 bg-gray-400/60 absolute bottom-[-48px] left-1/2"></div>
+                                                    </motion.div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+
+                                    {/* Themed Puppy Dog Birthday Cake Module */}
+                                    {showCake && !showMessage && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, scale: 0.5 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="z-10 flex flex-col items-center mt-12"
+                                        >
+                                            <img 
+                                                src="Component/Ansu-cake.png" 
+                                                alt="Cute Puppy Dog Birthday Cake" 
+                                                className="w-64 h-64 object-cover rounded-2xl shadow-xl border-4 border-pink-200"
+                                            />
+                                        </motion.div>
+                                    )}
+
+                                    {/* Letter/Message Display Board Panel */}
+                                    {showMessage && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: 30 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="w-full max-w-md bg-transparent p-4 mt-16 text-center select-text"
+                                        >
+                                            <h3 className="text-xl font-bold text-gray-800 mb-4">Dear Ansuuuu,</h3>
+                                            <p className="text-gray-600 leading-relaxed text-sm mb-4">
+                                                Even though we have met recently & I guess we know nothing about each other, but this was the way to show you how much you mean to me. This is a way to show that our friendship just started and I hope we will be making some great memories together. I'm starting this new year with a new friend as you and I hope our friendship will last forever.
+                                            </p>
+                                            <p className="text-pink-600 font-semibold text-base animate-pulse">
+                                                and on your special day, I wish you the happiest birthday
+                                            </p>
+                                        </motion.div>
+                                    )}
+
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
